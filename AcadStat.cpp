@@ -6,7 +6,8 @@ using namespace std;
 class Subject {
     private:
         string subjectName;
-        int subjectCode;
+        string subjectCode;
+        int MCode;
         float marksObtained;
 };
 
@@ -20,7 +21,7 @@ class Student {
     private:
         string studentName;
         string studentID;
-        long long int uniRollNo;
+        unsigned long long uniRollNo;
         vector<Semester> semesters;
 };
 
