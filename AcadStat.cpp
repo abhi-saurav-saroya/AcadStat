@@ -37,6 +37,13 @@ class Department {
     private:
         string departmentName;
         vector<Section> sections;
+
+    public:
+        Department(string name) : departmentName(name) {}
+        
+        string getDepartmentName() const {
+            return departmentName;
+        }
 };
 
 class AcadStatSystem {
@@ -104,7 +111,22 @@ void AcadStatSystem::mainMenu() {
 }
 
 void AcadStatSystem::addDepartment() {
-    cout << "Function to add Department (to be implemented)." << endl;
+    cout << endl;
+    cout << "Add Department Name: ";
+    
+    string deptName;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin >> deptName;
+
+    for (const Department& dept : departments) {
+        if (dept.getDepartmentName() == deptName) {
+            cout << "Department already exists. Cannot add duplicate.\n";
+            return;
+        }
+    }
+
+    departments.push_back(Department(deptName));
+    cout << "Department added successfully.\n";
 }
 
 void AcadStatSystem::addSection() {
