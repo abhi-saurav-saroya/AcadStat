@@ -20,6 +20,18 @@ class Subject {
         string subjectCode;
         int MCode;
         float marksObtained;
+
+    public:
+        Subject(string name, string code, int mcode, float marks) : 
+                subjectName(name), subjectCode(code), MCode(mcode), marksObtained(marks) {}
+
+        string getSubjectCode() const {
+            return subjectCode;
+        }
+
+        int getMCode() const {
+            return MCode;
+        }
 };
 
 class Semester {
@@ -32,6 +44,26 @@ class Semester {
 
         int getSemesterNumber() const {
             return semesterNumber;
+        }
+
+        bool subjectExists(const string& subcode) const {
+            for (const Subject& sub : subjects) {
+                if (toLower(subcode) == toLower(sub.getSubjectCode()))
+                    return true;
+            }
+            return false;
+        }
+
+        bool subjectExists(int mcode) const {
+            for (const Subject& sub : subjects) {
+                if (mcode == sub.getMCode())
+                    return true;
+            }
+            return false;
+        }
+
+        void addSubject(const Subject& sub) {
+            subjects.push_back(sub);
         }
 };
 
@@ -62,6 +94,15 @@ class Student {
             return false;
         }
 
+        Semester& getSemesterByNumber(int semNo) {
+            for (Semester& sem : semesters) {
+                if (sem.getSemesterNumber() == semNo) {
+                    return sem;
+                }
+            }
+            cout << "Semester not found." << endl;
+        }
+
         void addSemester(const Semester& sem) {
             semesters.push_back(sem);
         }
@@ -85,6 +126,15 @@ class Section {
                     return true;
             }
             return false;
+        }
+
+        Student& getStudentByRollNo(unsigned long long uniRollNo) {
+            for (Student& student : students) {
+                if (student.getUniRollNo() == uniRollNo) {
+                    return student;
+                }
+            }
+            cout << "Student not found." << endl;
         }
 
         void addStudent(const Student& stu){
@@ -147,6 +197,7 @@ class AcadStatSystem {
         void addSection();
         void addStudent();
         void manipulateData();
+        void addSubjects();
         void addMarks();
         void showReports();
 
@@ -340,7 +391,6 @@ void AcadStatSystem::addStudent() {
     
     string studentName, studentID;
     unsigned long long uniRollNo;
-    int semesterNo;
 
     cout << "Enter Student Name: ";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -356,9 +406,6 @@ void AcadStatSystem::addStudent() {
         cout << "Student with this ID or University Roll Number already exists in the selected section." << endl;
         return;
     }
-    
-    cout << "Enter Semester Number: ";
-    cin >> semesterNo;
 
     Student newStudent(studentName, studentID, uniRollNo);
     selectedSec.addStudent(newStudent);
@@ -368,6 +415,146 @@ void AcadStatSystem::addStudent() {
 
 void AcadStatSystem::manipulateData() {
     cout << "Function to manipulate data (to be implemented)." << endl;
+}
+
+void AcadStatSystem::addSubjects() {
+    cout << endl;
+
+    int deptCount = displayDepartments();
+
+    if (deptCount == 0) {
+        cout << "No departments available. Add a department first.\n";
+        return;
+    }
+
+    int deptChoice;
+
+    while(true) {
+        cout << "Select Department by number (or 0 to exit to main admin menu): ";
+
+        cin >> deptChoice;
+        if(!cin || deptChoice < 0 || deptChoice > deptCount) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Enter a valid department number." << endl;
+            continue;
+        } else if (deptChoice == 0) {
+            cout << "Exiting to main admin menu." << endl;
+            return;
+        }
+        break;
+    }
+
+    Department& selectedDept = departments[deptChoice - 1];
+
+    int sectionCount = selectedDept.displaySections();
+
+    if (sectionCount == 0) {
+        cout << "No sections available in this department. Add a section first.\n";
+        return;
+    }
+
+    int secChoice;
+
+    while(true) {
+        cout << "Select Section by number (or 0 to exit to main admin menu): ";
+
+        cin >> secChoice;
+        if(!cin || secChoice < 0 || secChoice > sectionCount) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Enter a valid section number." << endl;
+            continue;
+        } else if (secChoice == 0) {
+            cout << "Exiting to main admin menu." << endl;
+            return;
+        }
+        break;
+    }
+
+    Section& selectedSec = selectedDept.getSectionByIndex(secChoice - 1);
+
+    unsigned long long uniRollNo;
+    
+    while(true) {
+        cout << "Enter University Roll Number of the student to add marks (or 0 to exit to main admin menu): ";
+        cin >> uniRollNo;
+
+        if(!cin) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Please enter a valid University Roll Number." << endl;
+            continue;
+        } else if (uniRollNo == 0) {
+            cout << "Exiting to main admin menu." << endl;
+            return;
+        }
+        break;
+    }
+
+    Student& selectedStudent = selectedSec.getStudentByRollNo(uniRollNo);
+
+    int semNo;
+    cout << "Enter Semester Number: ";
+    cin >> semNo;
+
+    if (selectedStudent.semesterExists(semNo)) {
+        cout << "Semester already exists for this student." << endl;
+        return;
+    }
+
+    Semester newSemester(semNo);
+    selectedStudent.addSemester(newSemester);
+
+    cout << "Semester added successfully. Now you can add subjects: " << endl;
+
+    int subjectCount;
+
+    while(true) {
+        cout << "Enter number of subjects to add: ";
+        cin >> subjectCount;
+        if(!cin || subjectCount < 0) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Please enter a valid number of subjects." << endl;
+            continue;
+        }
+        break;
+    }
+
+    Semester& selectedSem = selectedStudent.getSemesterByNumber(semNo);
+
+    for(int i = 0; i < subjectCount; i++) {
+        string subjectName, subjectCode;
+        int MCode;
+
+        cout << "Enter Subject Name: ";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        getline(cin, subjectName);
+
+        cout << "Enter Subject Code: ";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        getline(cin, subjectCode);
+
+        if (selectedSem.subjectExists(subjectCode)) {
+            cout << "Subject with this code already exists in this semester." << endl;
+            --i; 
+            continue;
+        }
+
+        cout << "Enter MCode: ";
+        cin >> MCode;
+
+        if (selectedSem.subjectExists(MCode)) {
+            cout << "Subject with this MCode already exists in this semester." << endl;
+            --i; 
+            continue;
+        }
+
+        Subject newSubject(subjectName, subjectCode, MCode, 0.0f);
+        selectedSem.addSubject(newSubject);
+    }
+    cout << "Subjects added successfully to Semester " << semNo << " for student " << selectedStudent.getStudentID() << "." << endl;
 }
 
 void AcadStatSystem::addMarks() {
