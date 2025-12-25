@@ -9,7 +9,7 @@ using namespace std;
 string toLower(const string& s) {
     string result = s;
     for (char& ch : result) {
-        ch = tolower(ch);
+        ch = static_cast<char>(tolower(static_cast<unsigned char>(ch)));
     }
     return result;
 }
@@ -34,6 +34,11 @@ class Student {
         string studentID;
         unsigned long long uniRollNo;
         vector<Semester> semesters;
+
+    public:
+        string getStudentID() const {
+            return studentID;
+        }
 };
 
 class Section {
@@ -47,6 +52,18 @@ class Section {
         string getSectionName() const {
             return sectionName;
         }
+
+        void addStudent(const Student& stu) {
+            students.push_back(stu);
+        }
+
+        bool studentExists(const string& stuID) const {
+            for (const Student& stu : students) {
+                if (toLower(stuID) == toLower(stu.getStudentID()))
+                    return true;
+            }
+            return false;
+        }
 };
 
 class Department {
@@ -59,6 +76,19 @@ class Department {
         
         string getDepartmentName() const {
             return departmentName;
+        }
+
+        int displaySections() const {
+            if(sections.empty()) {
+                cout << "No sections available in this department." << endl;
+                return 0;
+            }
+
+            cout << "Section List:" << endl;
+            for (size_t i = 0; i < sections.size(); ++i) {
+                cout << "\t" << (i + 1) << ". " << sections[i].getSectionName() << endl;
+            }
+            return static_cast<int>(sections.size());
         }
 
         bool sectionExists(const string& secName) const {
@@ -87,6 +117,19 @@ class AcadStatSystem {
         void addStudent();
         void addMarks();
         void showReports();
+
+        int displayDepartments() const {
+            if(departments.empty()) {
+                cout << "No departments available." << endl;
+                return 0;
+            }
+
+            cout << "Department List:" << endl;
+            for (size_t i = 0; i < departments.size(); ++i) {
+                cout << "\t" << (i + 1) << ". " << departments[i].getDepartmentName() << endl;
+            }
+            return static_cast<int>(departments.size());
+        }
 };
 
 string AcadStatSystem::PassKey = "admin123";
@@ -160,23 +203,19 @@ void AcadStatSystem::addDepartment() {
 void AcadStatSystem::addSection() {
     cout << endl;
 
-    if (departments.empty()) {
+    int deptCount = displayDepartments();
+
+    if (deptCount == 0) {
         cout << "No departments available. Add a department first.\n";
         return;
-    }
-
-    cout << "Department List:" << endl;
-    
-    for (size_t i = 0; i < departments.size(); ++i) {
-        cout << "\t" << (i + 1) << ". " << departments[i].getDepartmentName() << endl;
     }
 
     int deptChoice;
 
     while(true) {
         cout << "Select Department by number: ";
-
         cin >> deptChoice;
+
         if(!cin || deptChoice < 0 || deptChoice > static_cast<int>(departments.size())) {
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -198,16 +237,68 @@ void AcadStatSystem::addSection() {
     cin >> sectionName;
 
     if (selectedDept.sectionExists(sectionName)) {
-        cout << "Section already exists in this department.\n";
+        cout << "Section already exists in this department." << endl;
         return;
     }
 
     selectedDept.addSection(Section(sectionName));
-    cout << "Section added successfully.\n";
+    cout << "Section added successfully." << endl;
 }
 
 void AcadStatSystem::addStudent() {
-    cout << "Function to add Student (to be implemented)." << endl;
+    cout << endl;
+
+    int deptCount = displayDepartments();
+
+    if (deptCount == 0) {
+        cout << "No departments available. Add a department first.\n";
+        return;
+    }
+
+    int deptChoice;
+
+    while(true) {
+        cout << "Select Department by number (or 0 to exit to main admin menu): ";
+
+        cin >> deptChoice;
+        if(!cin || deptChoice < 0 || deptChoice > static_cast<int>(departments.size())) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Enter a valid department number." << endl;
+            continue;
+        } else if (deptChoice == 0) {
+            cout << "Exiting to main admin menu." << endl;
+            return;
+        }
+        break;
+    }
+
+    Department& selectedDept = departments[deptChoice - 1];
+
+    int sectionCount = selectedDept.displaySections();
+
+    if (sectionCount == 0) {
+        cout << "No sections available in this department. Add a section first.\n";
+        return;
+    }
+
+    int secChoice;
+
+    while(true) {
+        cout << "Select Section by number (or 0 to exit to main admin menu): ";
+
+        cin >> secChoice;
+        if(!cin || secChoice < 0 || secChoice > sectionCount) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Enter a valid section number." << endl;
+            continue;
+        } else if (secChoice == 0) {
+            cout << "Exiting to main admin menu." << endl;
+            return;
+        }
+        break;
+    }
 }
 
 void AcadStatSystem::addMarks() {
