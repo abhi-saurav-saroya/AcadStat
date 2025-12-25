@@ -228,17 +228,18 @@ void AcadStatSystem::mainMenu() {
         cout << "\t2. Add Section" << endl;
         cout << "\t3. Add Student" << endl;
         cout << "\t4. Manipulate Data" << endl;
-        cout << "\t5. Add Marks" << endl;
-        cout << "\t6. Show Reports" << endl;
-        cout << "\t7. Logout" << endl;
+        cout << "\t5. Add Subjects" << endl;
+        cout << "\t6. Add Marks" << endl;
+        cout << "\t7. Show Reports" << endl;
+        cout << "\t8. Logout" << endl;
         cout << "Enter your choice: ";
 
         int choice;
         cin >> choice;
-        if(!cin || choice < 1 || choice > 7) {
+        if(!cin || choice < 1 || choice > 8) {
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "Invalid input. Please enter a number between 1 and 7." << endl;
+            cout << "Invalid input. Please enter a number between 1 and 8." << endl;
             continue;
         }
 
@@ -256,12 +257,15 @@ void AcadStatSystem::mainMenu() {
                 manipulateData();
                 break;
             case 5:
-                addMarks();
+                addSubjects();
                 break;
             case 6:
-                showReports();
+                addMarks();
                 break;
             case 7:
+                showReports();
+                break;
+            case 8:
                 cout << "Logging out..." << endl;
                 return;
         }
