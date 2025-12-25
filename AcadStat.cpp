@@ -26,6 +26,13 @@ class Semester {
     private:
         int semesterNumber;
         vector<Subject> subjects;
+
+    public:
+        Semester(int semNo) : semesterNumber(semNo) {}
+
+        int getSemesterNumber() const {
+            return semesterNumber;
+        }
 };
 
 class Student {
@@ -36,8 +43,27 @@ class Student {
         vector<Semester> semesters;
 
     public:
+        Student(string name, string id, unsigned long long roll)
+            : studentName(name), studentID(id), uniRollNo(roll) {}
+
         string getStudentID() const {
             return studentID;
+        }
+
+        unsigned long long getUniRollNo() const {
+            return uniRollNo;
+        }
+
+        bool semesterExists(int semNo) const {
+            for (const Semester& sem : semesters) {
+                if (sem.getSemesterNumber() == semNo)
+                    return true;
+            }
+            return false;
+        }
+
+        void addSemester(const Semester& sem) {
+            semesters.push_back(sem);
         }
 };
 
@@ -53,16 +79,16 @@ class Section {
             return sectionName;
         }
 
-        void addStudent(const Student& stu) {
-            students.push_back(stu);
-        }
-
-        bool studentExists(const string& stuID) const {
+        bool studentExists(const string& stuID, const unsigned long long& uniRollNo) const {
             for (const Student& stu : students) {
-                if (toLower(stuID) == toLower(stu.getStudentID()))
+                if (toLower(stuID) == toLower(stu.getStudentID()) || stu.getUniRollNo() == uniRollNo)
                     return true;
             }
             return false;
+        }
+
+        void addStudent(const Student& stu){
+            students.push_back(stu);
         }
 };
 
@@ -99,6 +125,11 @@ class Department {
             return false;
         }
 
+        Section& getSectionByIndex(int index) {
+            return sections[index];
+        }
+
+
         void addSection(const Section& sec) {
             sections.push_back(sec);
         }
@@ -115,6 +146,7 @@ class AcadStatSystem {
         void addDepartment();
         void addSection();
         void addStudent();
+        void manipulateData();
         void addMarks();
         void showReports();
 
@@ -144,17 +176,18 @@ void AcadStatSystem::mainMenu() {
         cout << "\t1. Add Department" << endl;
         cout << "\t2. Add Section" << endl;
         cout << "\t3. Add Student" << endl;
-        cout << "\t4. Add Marks" << endl;
-        cout << "\t5. Show Reports" << endl;
-        cout << "\t6. Logout" << endl;
+        cout << "\t4. Manipulate Data" << endl;
+        cout << "\t5. Add Marks" << endl;
+        cout << "\t6. Show Reports" << endl;
+        cout << "\t7. Logout" << endl;
         cout << "Enter your choice: ";
 
         int choice;
         cin >> choice;
-        if(!cin || choice < 1 || choice > 6) {
+        if(!cin || choice < 1 || choice > 7) {
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "Invalid input. Please enter a number between 1 and 6." << endl;
+            cout << "Invalid input. Please enter a number between 1 and 7." << endl;
             continue;
         }
 
@@ -169,12 +202,15 @@ void AcadStatSystem::mainMenu() {
                 addStudent();
                 break;
             case 4:
-                addMarks();
+                manipulateData();
                 break;
             case 5:
-                showReports();
+                addMarks();
                 break;
             case 6:
+                showReports();
+                break;
+            case 7:
                 cout << "Logging out..." << endl;
                 return;
         }
@@ -261,7 +297,7 @@ void AcadStatSystem::addStudent() {
         cout << "Select Department by number (or 0 to exit to main admin menu): ";
 
         cin >> deptChoice;
-        if(!cin || deptChoice < 0 || deptChoice > static_cast<int>(departments.size())) {
+        if(!cin || deptChoice < 0 || deptChoice > deptCount) {
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << "Invalid input. Enter a valid department number." << endl;
@@ -299,6 +335,39 @@ void AcadStatSystem::addStudent() {
         }
         break;
     }
+
+    Section& selectedSec = selectedDept.getSectionByIndex(secChoice - 1);
+    
+    string studentName, studentID;
+    unsigned long long uniRollNo;
+    int semesterNo;
+
+    cout << "Enter Student Name: ";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    getline(cin, studentName);
+
+    cout << "Enter Student ID: ";
+    cin >> studentID;
+
+    cout << "Enter University Roll Number: ";
+    cin >> uniRollNo;
+
+    if (selectedSec.studentExists(studentID, uniRollNo)) {
+        cout << "Student with this ID or University Roll Number already exists in the selected section." << endl;
+        return;
+    }
+    
+    cout << "Enter Semester Number: ";
+    cin >> semesterNo;
+
+    Student newStudent(studentName, studentID, uniRollNo);
+    selectedSec.addStudent(newStudent);
+
+    cout << "Student added successfully.\n";
+}
+
+void AcadStatSystem::manipulateData() {
+    cout << "Function to manipulate data (to be implemented)." << endl;
 }
 
 void AcadStatSystem::addMarks() {
