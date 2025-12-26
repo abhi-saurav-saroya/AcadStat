@@ -1,10 +1,10 @@
-#include "C:\Users\hp\OneDrive\Documents\PROJECTS\Fun Activities\AcadStat\include\AcadStatAdminSystem.h"
-#include "C:\Users\hp\OneDrive\Documents\PROJECTS\Fun Activities\AcadStat\include\Department.h"
-#include "C:\Users\hp\OneDrive\Documents\PROJECTS\Fun Activities\AcadStat\include\Section.h"
-#include "C:\Users\hp\OneDrive\Documents\PROJECTS\Fun Activities\AcadStat\include\Student.h"
-#include "C:\Users\hp\OneDrive\Documents\PROJECTS\Fun Activities\AcadStat\include\Semester.h"
-#include "C:\Users\hp\OneDrive\Documents\PROJECTS\Fun Activities\AcadStat\include\Subject.h"
-#include "C:\Users\hp\OneDrive\Documents\PROJECTS\Fun Activities\AcadStat\include\utils.h"
+#include "AcadStatAdminSystem.h"
+#include "Department.h"
+#include "Section.h"
+#include "Student.h"
+#include "Semester.h"
+#include "Subject.h"
+#include "utils.h"
 
 
 #include <iostream>

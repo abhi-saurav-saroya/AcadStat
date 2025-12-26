@@ -1,6 +1,6 @@
-#include "C:\Users\hp\OneDrive\Documents\PROJECTS\Fun Activities\AcadStat\include\Department.h"
-#include "C:\Users\hp\OneDrive\Documents\PROJECTS\Fun Activities\AcadStat\include\Section.h"
-#include "C:\Users\hp\OneDrive\Documents\PROJECTS\Fun Activities\AcadStat\include\utils.h"
+#include "Department.h"
+#include "Section.h"
+#include "utils.h"
 
 #include <iostream>
 #include <vector>

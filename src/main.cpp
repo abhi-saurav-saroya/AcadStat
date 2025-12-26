@@ -1,4 +1,4 @@
-#include "C:\Users\hp\OneDrive\Documents\PROJECTS\Fun Activities\AcadStat\include\AcadStatAdminSystem.h"
+#include "AcadStatAdminSystem.h"
 
 #include <iostream>
 #include <string>

@@ -1,6 +1,6 @@
-#include "C:\Users\hp\OneDrive\Documents\PROJECTS\Fun Activities\AcadStat\include\Student.h"
-#include "C:\Users\hp\OneDrive\Documents\PROJECTS\Fun Activities\AcadStat\include\Semester.h"
-#include "C:\Users\hp\OneDrive\Documents\PROJECTS\Fun Activities\AcadStat\include\utils.h"
+#include "Student.h"
+#include "Semester.h"
+#include "utils.h"
 
 #include <stdexcept>
 #include <string>
