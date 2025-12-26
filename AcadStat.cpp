@@ -32,6 +32,18 @@ class Subject {
         int getMCode() const {
             return MCode;
         }
+
+        string getSubjectName() const {
+            return subjectName;
+        }
+        
+        float getMarks() const {
+            return marksObtained;
+        }
+
+        void setMarks(float marks) {
+            marksObtained = marks;
+        }
 };
 
 class Semester {
@@ -61,6 +73,42 @@ class Semester {
             }
             return false;
         }
+
+        int displaySubjects() const {
+            if(subjects.empty()) {
+                cout << "No subjects available in this semester." << endl;
+                return 0;
+            }
+
+            cout << "Subject List:" << endl;
+            for (size_t i = 0; i < subjects.size(); ++i) {
+                cout << "\t" 
+                     << (i + 1) 
+                     << ". " 
+                     << subjects[i].getSubjectCode() 
+                     << " (" 
+                     << subjects[i].getMCode() 
+                     << "): "
+                     << subjects[i].getSubjectName() 
+                     << endl;
+            }
+            return static_cast<int>(subjects.size());
+        }
+
+        void updateMarks(const string& subCode, float marks) {
+            for (Subject& sub : subjects) {
+                if (toLower(sub.getSubjectCode()) == toLower(subCode)) {
+                    sub.setMarks(marks);
+                    return;
+                }
+            }
+            throw runtime_error("Subject not found.");
+        }       
+
+        void updateMarksByIndex(int index, float marks) {
+            subjects.at(index).setMarks(marks);
+        }   
+
 
         void addSubject(const Subject& sub) {
             subjects.push_back(sub);
@@ -100,7 +148,7 @@ class Student {
                     return sem;
                 }
             }
-            cout << "Semester not found." << endl;
+            throw runtime_error("Semester not found.");
         }
 
         void addSemester(const Semester& sem) {
@@ -134,7 +182,7 @@ class Section {
                     return student;
                 }
             }
-            cout << "Student not found." << endl;
+            throw runtime_error("Student not found.");
         }
 
         void addStudent(const Student& stu){
@@ -537,7 +585,6 @@ void AcadStatSystem::addSubjects() {
         getline(cin, subjectName);
 
         cout << "Enter Subject Code: ";
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         getline(cin, subjectCode);
 
         if (selectedSem.subjectExists(subjectCode)) {
@@ -562,7 +609,118 @@ void AcadStatSystem::addSubjects() {
 }
 
 void AcadStatSystem::addMarks() {
-    cout << "Function to add Marks (to be implemented)." << endl;
+    cout << endl;
+
+    int deptCount = displayDepartments();
+
+    if (deptCount == 0) {
+        cout << "No departments available. Add a department first.\n";
+        return;
+    }
+
+    int deptChoice;
+
+    while(true) {
+        cout << "Select Department by number (or 0 to exit to main admin menu): ";
+
+        cin >> deptChoice;
+        if(!cin || deptChoice < 0 || deptChoice > deptCount) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Enter a valid department number." << endl;
+            continue;
+        } else if (deptChoice == 0) {
+            cout << "Exiting to main admin menu." << endl;
+            return;
+        }
+        break;
+    }
+
+    Department& selectedDept = departments[deptChoice - 1];
+
+    int sectionCount = selectedDept.displaySections();
+
+    if (sectionCount == 0) {
+        cout << "No sections available in this department. Add a section first.\n";
+        return;
+    }
+
+    int secChoice;
+
+    while(true) {
+        cout << "Select Section by number (or 0 to exit to main admin menu): ";
+
+        cin >> secChoice;
+        if(!cin || secChoice < 0 || secChoice > sectionCount) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Enter a valid section number." << endl;
+            continue;
+        } else if (secChoice == 0) {
+            cout << "Exiting to main admin menu." << endl;
+            return;
+        }
+        break;
+    }
+
+    Section& selectedSec = selectedDept.getSectionByIndex(secChoice - 1);
+
+    unsigned long long uniRollNo;
+    
+    while(true) {
+        cout << "Enter University Roll Number of the student to add marks (or 0 to exit to main admin menu): ";
+        cin >> uniRollNo;
+
+        if(!cin) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Please enter a valid University Roll Number." << endl;
+            continue;
+        } else if (uniRollNo == 0) {
+            cout << "Exiting to main admin menu." << endl;
+            return;
+        }
+        break;
+    }
+
+    Student& selectedStudent = selectedSec.getStudentByRollNo(uniRollNo);
+
+    int semNo;
+    cout << "Enter Semester Number: ";
+    cin >> semNo;
+
+    Semester& selectedSem = selectedStudent.getSemesterByNumber(semNo);
+
+    if (!selectedStudent.semesterExists(semNo)) {
+        cout << "Semester does not exist for this student.\n";
+        return;
+    }
+
+    int subjectCount = selectedSem.displaySubjects();
+
+    if (subjectCount == 0) {
+        cout << "No subjects available in this semester. Add subjects first.\n";
+        return;
+    }
+
+    for(int i = 0; i < subjectCount; i++) {
+        float marks;
+
+        while (true) {
+            cout << "Enter Marks Obtained for subject " << (i + 1) << ": ";
+            cin >> marks;
+            
+            if (!cin || marks < 0 || marks > 100) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Invalid marks. Enter a value between 0 and 100.\n";
+                continue;
+            }
+            break;
+        }
+
+        selectedSem.updateMarksByIndex(i, marks);
+    }
 }
 
 void AcadStatSystem::showReports() {
