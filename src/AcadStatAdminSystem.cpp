@@ -313,19 +313,26 @@ void AcadStatSystem::addSubjects() {
         break;
     }
 
-    Student& selectedStudent = selectedSec.getStudentByRollNo(uniRollNo);
+    Student* selectedStudent = nullptr;
+
+    try {
+        selectedStudent = &selectedSec.getStudentByRollNo(uniRollNo);
+    } catch (const runtime_error& e) {
+        cout << e.what() << endl;
+        return; 
+    }
 
     int semNo;
     cout << "Enter Semester Number: ";
     cin >> semNo;
 
-    if (selectedStudent.semesterExists(semNo)) {
+    if (selectedStudent->semesterExists(semNo)) {
         cout << "Semester already exists for this student." << endl;
         return;
     }
 
     Semester newSemester(semNo);
-    selectedStudent.addSemester(newSemester);
+    selectedStudent->addSemester(newSemester);
 
     cout << "Semester added successfully. Now you can add subjects: " << endl;
 
@@ -343,7 +350,7 @@ void AcadStatSystem::addSubjects() {
         break;
     }
 
-    Semester& selectedSem = selectedStudent.getSemesterByNumber(semNo);
+    Semester& selectedSem = selectedStudent->getSemesterByNumber(semNo);
 
     for(int i = 0; i < subjectCount; i++) {
         string subjectName, subjectCode;
@@ -374,7 +381,7 @@ void AcadStatSystem::addSubjects() {
         Subject newSubject(subjectName, subjectCode, MCode, 0.0f);
         selectedSem.addSubject(newSubject);
     }
-    cout << "Subjects added successfully to Semester " << semNo << " for student " << selectedStudent.getStudentID() << "." << endl;
+    cout << "Subjects added successfully to Semester " << semNo << " for student " << selectedStudent->getStudentID() << "." << endl;
 }
 
 void AcadStatSystem::addMarks() {
@@ -452,20 +459,36 @@ void AcadStatSystem::addMarks() {
         break;
     }
 
-    Student& selectedStudent = selectedSec.getStudentByRollNo(uniRollNo);
+    Student* selectedStudent = nullptr;
+
+    try {
+        selectedStudent = &selectedSec.getStudentByRollNo(uniRollNo);
+    }
+    catch (const runtime_error& e) {
+        cout << e.what() << endl;
+        return;
+    }
 
     int semNo;
     cout << "Enter Semester Number: ";
     cin >> semNo;
 
-    Semester& selectedSem = selectedStudent.getSemesterByNumber(semNo);
-
-    if (!selectedStudent.semesterExists(semNo)) {
+    if (!selectedStudent->semesterExists(semNo)) {
         cout << "Semester does not exist for this student.\n";
         return;
     }
 
-    int subjectCount = selectedSem.displaySubjects();
+    Semester* selectedSem = nullptr;
+
+    try {
+        selectedSem = &selectedStudent->getSemesterByNumber(semNo);
+    }
+    catch (const runtime_error& e) {
+        cout << e.what() << endl;
+        return; 
+    }
+
+    int subjectCount = selectedSem->displaySubjects();
 
     if (subjectCount == 0) {
         cout << "No subjects available in this semester. Add subjects first.\n";
@@ -488,7 +511,7 @@ void AcadStatSystem::addMarks() {
             break;
         }
 
-        selectedSem.updateMarksByIndex(i, marks);
+        selectedSem->updateMarksByIndex(i, marks);
     }
 }
 
