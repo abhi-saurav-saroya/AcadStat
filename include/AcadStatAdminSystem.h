@@ -25,6 +25,10 @@ class AcadStatSystem {
         void addMarks();
         void showReports();
         int displayDepartments() const;
+        void showbyDepartment();
+        void showbyStudent();
+        void showbySemester();
+        void showbySection();
 };
 
 #endif
