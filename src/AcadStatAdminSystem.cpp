@@ -492,6 +492,60 @@ void AcadStatSystem::addMarks() {
     }
 }
 
+void AcadStatSystem::showbyDepartment() {
+    cout << "Feature not implemented yet." << endl;
+}
+
+void AcadStatSystem::showbySection() {
+    cout << "Feature not implemented yet." << endl;
+}
+
+void AcadStatSystem::showbyStudent() {
+    cout << "Feature not implemented yet." << endl;
+}
+
+void AcadStatSystem::showbySemester() {
+    cout << "Feature not implemented yet." << endl;
+}
+
 void AcadStatSystem::showReports() {
-    cout << "Function to show Reports (to be implemented)." << endl;
+    cout << endl;
+
+    cout << "\t1. Display By Department" << endl;
+    cout << "\t2. Display By Section" << endl;
+    cout << "\t3. Display By Student" << endl;
+    cout << "\t4. Display By Semester" << endl;
+    int showChoice;
+
+    while(true) {
+        cout << "Choose option by number (or 0 to exit to main admin menu): ";
+
+        cin >> showChoice;
+        if(!cin || showChoice < 0 || showChoice > 4) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input. Enter a valid choice between 1 and 4." << endl;
+            continue;
+        } else if (showChoice == 0) {
+            cout << "Exiting to main admin menu." << endl;
+            return;
+        }
+        break;
+    }
+
+    switch (showChoice) {
+    case 1:
+        showByDepartment();
+        break;
+    case 2:
+        showBySection();
+        break;
+    case 3:
+        showByStudent();
+        break;
+    case 4:
+        showBySemester();
+        break;
+    }
+
 }
