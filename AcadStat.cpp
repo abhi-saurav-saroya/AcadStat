@@ -6,6 +6,25 @@
 #include<cctype>
 using namespace std;
 
+string loadAdminPasskeyFromEnv() {
+    ifstream file(".env");
+    if (!file) {
+        cerr << "ERROR: .env file not found!\n";
+        return "";
+    }
+
+    string line;
+    while (getline(file, line)) {
+        if (line.find("ADMIN_PASSKEY=") == 0) {
+            return line.substr(14); // length of "ADMIN_PASSKEY="
+        }
+    }
+
+    cerr << "ERROR: ADMIN_PASSKEY not found in .env file!\n";
+    return "";
+}
+
+
 string toLower(const string& s) {
     string result = s;
     for (char& ch : result) {
@@ -239,6 +258,13 @@ class AcadStatSystem {
         vector<Department> departments;
 
     public:
+        AcadStatSystem() {
+            PassKey = loadAdminPasskeyFromEnv();
+            if (PassKey.empty()) {
+                cout << "Admin login disabled due to missing passkey.\n";
+            }
+        }
+
         bool adminLogin(const string& key);
         void mainMenu();
         void addDepartment();
