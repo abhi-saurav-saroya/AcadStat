@@ -535,16 +535,16 @@ void AcadStatSystem::showReports() {
 
     switch (showChoice) {
     case 1:
-        showByDepartment();
+        showbyDepartment();
         break;
     case 2:
-        showBySection();
+        showbySection();
         break;
     case 3:
-        showByStudent();
+        showbyStudent();
         break;
     case 4:
-        showBySemester();
+        showbySemester();
         break;
     }
 
